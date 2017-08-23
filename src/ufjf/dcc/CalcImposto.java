@@ -14,6 +14,7 @@ import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 
 /**
@@ -22,12 +23,13 @@ import javax.swing.JTextField;
  */
 public class CalcImposto extends JFrame {
     private final JTextField valorProduto = new JTextField(25);
-    private final JLabel valorProdutoDolar = new JLabel();
     private final JLabel valorDolar = new JLabel();
-    private final JCheckBox foiTributado = new JCheckBox("Tributar");
+    private final JCheckBox tributado = new JCheckBox("Tributar");
     private final JCheckBox icms = new JCheckBox("ICMS");
     private final JButton calcular = new JButton("Calcular");
     private final double realDolar = 3.15;
+    private final double tributadoVal = 1.6;
+    private final double icmsVal = 1.18;
     
     public CalcImposto() throws HeadlessException {
         super("Imposto");
@@ -36,16 +38,13 @@ public class CalcImposto extends JFrame {
         valorDolar.setText("<html>Cotação do Dolar<br>$1.00 = R$"+realDolar+"</html>");
         
         add(valorProduto);
-        add(valorProdutoDolar);
         add(valorDolar);
-        add(foiTributado);
+        add(tributado);
         add(icms);
         add(calcular);
         
         CalcularValor calcularValor = new CalcularValor();
         calcular.addItemListener(calcularValor);
-        //chkNegrito.addItemListener(trocaFonte);
-        //chkItalico.addItemListener(trocaFonte);
     }
     
     private class CalcularValor implements ItemListener {
@@ -53,7 +52,19 @@ public class CalcImposto extends JFrame {
         @Override
         public void itemStateChanged(ItemEvent e) {
             Integer valor = Integer.parseInt(valorProduto.getText());
-            valorProdutoDolar.setText("<html>Valor do produto em Dolar<br>$"+valor*realDolar);
+            double valorTotal = 0, valorEmDolar = valor*realDolar;
+            
+            if(tributado.isSelected() && icms.isSelected()) {
+                valorTotal = valor*tributadoVal*icmsVal;
+            } else if(tributado.isSelected()) {
+                valorTotal = valor*tributadoVal;
+            } else if(icms.isSelected()) {
+                valorTotal = valor*icmsVal;
+            } else {
+                valorTotal = valor;
+            }
+            JOptionPane.showMessageDialog(null, "Valor do produto em Dolar"+valorEmDolar+"Valor total:"+valorTotal, "Resultado", JOptionPane.INFORMATION_MESSAGE);
+
         }
         
     }
